@@ -1,4 +1,5 @@
 from selenium import webdriver
+from proxy_login import set_driver #py file
 
 COOKIES_FOLDER = r'C:\Users\HP EliteBook\OneDrive\A_Miscalaneus\Escritorio\Code\git_folder\login and launcher\cookies_folder'
 #v96
@@ -15,29 +16,29 @@ EXECUTABLE_PATH = r'C:\Users\HP EliteBook\OneDrive\A_Miscalaneus\Escritorio\Code
 # repeat 
 
 
-def save_cookies(d, COOKIES_FILENAME_MAIL):
+def save_cookies(d, city):
     ''' d, COOKIES_FILE // if COOKIES_FILE name not specified = cookies_last_login.pkl '''
     import pickle
     
-    COOKIES_FILE_PATH = COOKIES_FOLDER + '\\' + COOKIES_FILENAME_MAIL+ '.pkl'
+    COOKIES_FILE_PATH = COOKIES_FOLDER + '\\' + city + '.pkl'
     with open(COOKIES_FILE_PATH, "wb") as f:
         pickle.dump( d.get_cookies(), f)
 
 
 
 def run():
-    for _ in range(30):
-        import undetected_chromedriver.v2 as uc
+    for i in range(30):
+        # import undetected_chromedriver.v2 as uc
+        # options = uc.ChromeOptions()
+        # d = uc.Chrome(executable_path=EXECUTABLE_PATH,options=options)
 
-        options = uc.ChromeOptions()
-        d = uc.Chrome(executable_path=EXECUTABLE_PATH,options=options)
+        d, city = set_driver(i)
 
         d.get('https://es.wallapop.com/')
 
         try:
-            mail = input('Enter account email to name the cookies file:  ')
-            filename = 'walla_'+mail
-            save_cookies(d, filename)
+            continue_mark = input('Press enter to continue ')
+            save_cookies(d, city)
 
         finally:
             d.delete_all_cookies()
