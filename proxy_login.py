@@ -2,9 +2,10 @@ import undetected_chromedriver.v2 as uc
 import proxy_data
 from time import sleep
 
-PROXY           = "185.239.140.165:49155"
-EXECUTABLE_PATH = r'C:\Users\HP EliteBook\OneDrive\A_Miscalaneus\Escritorio\Code\git_folder\wp_importer\chromedriver.exe'
+EXECUTABLE_PATH = r'C:\Users\HP EliteBook\OneDrive\A_Miscalaneus\Escritorio\Code\git_folder\login and launcher\chromedriver.exe'
+
 COOKIES_FOLDER  = r'C:\Users\HP EliteBook\OneDrive\A_Miscalaneus\Escritorio\Code\git_folder\login and launcher\cookies_folder\\'
+SITE_URL        = 'https://es.wallapop.com/'
 
 
 def set_driver(proxy_n):
@@ -31,13 +32,15 @@ def save_cookies(d, city='unspecified'):
     ''' d, city // if city name not specified = cookies_last_login.pkl '''
     import pickle
 
+    print('saving cookies')
+
     if city == 'unspecified':
         city = "cookies_last_login.pkl" 
     
     COOKIES_FILE_PATH = COOKIES_FOLDER + '\\' + city + '.pkl'
 
     with open(COOKIES_FILE_PATH, "wb") as f:
-        pickle.dump( d.get_cookies(), f)
+        pickle.dump(d.get_cookies(), f)
     print(f'login cookies saved in city file {city}')
 
 
@@ -46,16 +49,18 @@ def load_cookies(d, city):
 
     cookies_filepath = f'{COOKIES_FOLDER}{city}.pkl'
 
-    d.get('https://es.wallapop.com/')
+    # driver has to be in the target URL in order to load the cookies
+    d.get(SITE_URL)
 
     cookies = pickle.load(open(cookies_filepath, "rb"))
     for cookie in cookies:
         if cookie['domain'] == '.wallapop.com':
-        # if google_or_walla in cookie['domain']:
             d.add_cookie(cookie)
             print(f'added this cookie: {cookie}')
 
-    d.get('https://es.wallapop.com/')
+    # to apply effect of the cookies reload the page
+    sleep(5)
+    d.get(SITE_URL)
 
     return d
 
@@ -74,11 +79,9 @@ def close_second_tab(d):
 
 def my_wait():
     while True:
-        try:
-            # a = input('Do you want to save cookies? ')
-            sleep(100000)
-        except KeyboardInterrupt:
-            print('Capted a break, saving cookies')
+        a = input('Enter return to continue ')
+        if a == '':
+            print('Capted a break')
             return
 
 def run():
@@ -98,12 +101,12 @@ def run():
 
         d, city = set_driver(i)
 
-        load_cookies(d, city)
-
         close_second_tab(d)
 
+        load_cookies(d, city)
+
         # d2 = set_driver(1)
-        # d2.get('https://es.wallapop.com/')
+        # d2.get(SITE_URL)
         # opened_drivers.append([d, city])
 
         my_wait()
